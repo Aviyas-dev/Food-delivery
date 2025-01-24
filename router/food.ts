@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { FoodModel } from "../models/food-category";
+import { FoodCategoryModel, FoodModel } from "../models/food-category";
 import cors from "cors";
 
 export const foodRouter = Router();
@@ -11,7 +11,7 @@ foodRouter.use(cors());
 foodRouter.get("/", async (req, res) => {
   try {
     const filter = req.query.category ? { category: req.query.category } : {};
-    const foods = await FoodModel.find(filter);
+    const foods = await FoodModel.find(filter).populate("category", "categoryName");
     res.json({ data: foods });
 ;
   } catch (error) {
@@ -74,7 +74,11 @@ foodRouter.post("/", async (req, res) => {
     res.status(400).json({ message: "Missing required fields" });
   }
 
-  try {
+    try {
+    const categoryExists = await FoodCategoryModel.findById({ category });
+    if (!categoryExists) {
+      res.status(400).json({ message: "Category does not exist" });
+    }
     const newFood = new FoodModel({ title, description, price, category, image });
     await newFood.save();
     res.status(201).json(newFood);

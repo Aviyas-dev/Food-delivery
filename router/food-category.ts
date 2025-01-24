@@ -1,8 +1,9 @@
 import { Request, Response, Router } from "express";
 import { FoodCategoryModel } from "../models/food-category";
+import cors from "cors";
 
 export const foodCategoryRouter = Router();
-
+foodCategoryRouter.use(cors());
 foodCategoryRouter.get('/', async (req, res)=> {
     const items = await FoodCategoryModel.find();
     res.json(items); 
@@ -29,35 +30,20 @@ foodCategoryRouter.get('/:id', async (req: Request, res: Response)=> {
 });
 
 //update hiih heseg
-foodCategoryRouter.put(':id', async (req: Request, res: Response) => {
+foodCategoryRouter.put('/:_id', async (req: Request, res: Response) => {
+    const { _id } = req.params;
     const  updatedItem  = await FoodCategoryModel.findByIdAndUpdate(
-        req.params.id,
-        {
-         categoryName : req.body.categoryName
-        },
-        {
-            new: true 
-        }
+        _id,
+        { categoryName : req.body.categoryName },
+        { new: true }
     ); 
-     
-    res.json(updatedItem);
+     res.json(updatedItem);
     });
   
-      
-
-
-//Update- shinechileh
-// app.put('/food-category/:id', async (req: Request, res: Response) => {
-//     res.json({
-//         message: 'One Food Category updated successfully.',
-//     });
-// });
-
-
-
-//Delete-ustgah
-foodCategoryRouter.delete('/:_id', async (req: Request, res: Response) => {
-    const deletedItem = await FoodCategoryModel.findByIdAndDelete(req.params);
+      //Delete-ustgah
+ foodCategoryRouter.delete('/:_id', async (req: Request, res: Response) => {
+    const { _id } = req.params;
+    const deletedItem = await FoodCategoryModel.findByIdAndDelete(_id);
     res.json(deletedItem);
 
 });
