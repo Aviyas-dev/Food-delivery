@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { FoodCategoryModel, FoodModel } from "../models/food-category";
+import { FoodModel } from "../models/food";
 import cors from "cors";
 
 export const foodRouter = Router();
@@ -8,84 +8,52 @@ export const foodRouter = Router();
 foodRouter.use(cors());
 
 // Food-ийн үндсэн маршрут
-foodRouter.get("/", async (req, res) => {
-  try {
-    const filter = req.query.category ? { category: req.query.category } : {};
-    const foods = await FoodModel.find(filter).populate("category", "categoryName");
-    res.json({ data: foods });
-;
-  } catch (error) {
-    console.error("Error fetching foods:", error);
-    res.status(500).json({ message: "Failed to fetch foods" });
-  }
+foodRouter.get("/", async (req: Request, res: Response) => {
+ const filter = req.query.category ? { category: req.query.category } : {};
+ const foods = await FoodModel.find(filter);
+    res.json(foods);
 });
 
 // Тодорхой foodId-тай хоолны мэдээллийг авах
-foodRouter.get("/:foodId", async (req, res) => {
-  try {
-    const { foodId } = req.params;
-    const food = await FoodModel.findById(foodId);
-    if (!food) {
-       res.status(404).json({ message: "Food item not found" });
-    }
-    res.status(200).json(food);
-  } catch (error) {
-    console.error("Error fetching food item:", error);
-    res.status(500).json({ message: "Failed to fetch food item" });
-  }
+foodRouter.get("/:foodId", async (req: Request, res: Response) => {
+    const id = req.params;
+    const item = await FoodModel.find({ _id: id });
+    res.json(item);
+ 
 });
 
 // Хоолны мэдээллийг шинэчлэх
-foodRouter.patch("/:foodId", async (req, res) => {
-  try {
-    const { foodId } = req.params;
-    const updateData = req.body;
-    const updatedFood = await FoodModel.findByIdAndUpdate(foodId, updateData, { new: true });
-    if (!updatedFood) {
-       res.status(404).json({ message: "Food item not found" });
-    }
-    res.status(200).json(updatedFood);
-  } catch (error) {
-    console.error("Error updating food item:", error);
-    res.status(500).json({ message: "Failed to update food item" });
-  }
+foodRouter.put("/:id", async (req: Request, res: Response) => {
+    const { params, body } = req;
+    const foodId = params.id;
+    const item = await FoodModel.find({ _id: foodId });
+    const updatedItem = await FoodModel.findByIdAndUpdate(
+        foodId,
+        { ...item, ...body },
+        { new: true }
+    );
+    res.json(updatedItem);
+  
 });
 
 // Хоол устгах
-foodRouter.delete("/:foodid", async (req: Request, res: Response) => {
-  try {
-    const { foodid } = req.params;
-    const deletedItem = await FoodModel.findByIdAndDelete(foodid);
-    if (!deletedItem) {
-       res.status(404).json({ message: "Food item not found" });
-    }
-    res.status(200).json(deletedItem);
-  } catch (error) {
-    console.error("Error deleting food item:", error);
-    res.status(500).json({ message: "Failed to delete food item" });
-  }
+foodRouter.delete("/:id", async (req: Request<{ id: string}>, res: Response) => {
+    const foodId = req.params.id;
+    const deletedFood = await FoodModel.findByIdAndDelete(foodId);
+    res.json("Deleted: " + deletedFood);
+ 
 });
 
 // Хоол нэмэх
-foodRouter.post("/", async (req, res) => {
-  const { title, description, price, category, image } = req.body;
+foodRouter.post("/", async (req: Request, res: Response) => {
+  const { body } = req;
+    await FoodModel.create({
+        ...body,
+    });
+    const food = await FoodModel.find();
+    res.json(food);
 
-  if (!title || !description || !price || !category) {
-    res.status(400).json({ message: "Missing required fields" });
-  }
 
-    try {
-    const categoryExists = await FoodCategoryModel.findById({ category });
-    if (!categoryExists) {
-      res.status(400).json({ message: "Category does not exist" });
-    }
-    const newFood = new FoodModel({ title, description, price, category, image });
-    await newFood.save();
-    res.status(201).json(newFood);
-  } catch (error) {
-    console.error("Error saving food:", error);
-    res.status(500).json({ message: "Failed to save food" });
-  }
 });
 
 

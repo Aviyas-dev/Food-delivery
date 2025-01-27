@@ -5,7 +5,7 @@ const FoodOrderItemSchema = new Schema({
     quantity: Number,
 });
 
-const FOOD_ORDER_SCHEMA = new Schema(
+export const FOOD_ORDER_SCHEMA = new Schema(
     {
         user: String,
         totalPrice: Number,

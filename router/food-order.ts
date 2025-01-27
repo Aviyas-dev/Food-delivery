@@ -1,54 +1,46 @@
-// import express from "express";
+import {Request, Response, Router} from 'express';
+import { FoodOrderModel } from '../models/food-order';
 
-// const router = express.Router();
+export const foodOrderRouter = Router();
 
-// // Dummy order data
-// let orders = [
-//   {
-//     id: 1,
-//     customer: "test@gmail.com",
-//     food: "2 foods",
-//     date: "2024/12/20",
-//     total: "$26.97",
-//     deliveryAddress: "123, Main Street, City",
-//     deliveryState: "Pending",
-//   },
-//   {
-//     id: 2,
-//     customer: "test2@gmail.com",
-//     food: "1 food",
-//     date: "2024/12/21",
-//     total: "$15.50",
-//     deliveryAddress: "456, Elm Street, City",
-//     deliveryState: "Delivered",
-//   },
-// ];
+foodOrderRouter.get('/', async (req: Request, res: Response) => {
+    const foodOrder = await FoodOrderModel.find();
+    res.json(foodOrder);
+});
 
-// // GET: Get all orders
-// router.get("/orders", (req, res) => {
-//   res.json(orders);
-// });
+foodOrderRouter.get('/:id', async (req: Request, res: Response) => {
+    const id = req.params;
+    const item = await FoodOrderModel.find({_id: id});
+    res.json(item);
+});
 
-// // POST: Add a new order
-// router.post("/orders", (req, res) => {
-//   const newOrder = { id: orders.length + 1, ...req.body };
-//   orders.push(newOrder);
-//   res.status(201).json(newOrder);
-// });
+foodOrderRouter.post('/', async (req: Request, res: Response) => {
+    const {body} = req;
+    await FoodOrderModel.create({
+        ...body,
+    });
+    const foodOrder = await FoodOrderModel.find();
 
-// // PUT: Update order delivery state
-// router.put("/orders/:id", (req, res) => {
-//   const { id } = req.params;
-//   const { deliveryState } = req.body;
+    res.json(foodOrder);
+});
 
-//   const order = orders.find((o) => o.id === parseInt(id));
-//   if (!order) {
-//     res.status(404).json({ message: "Order not found" });
-//   }
+foodOrderRouter.put('/:_id', async (req: Request, res: Response) => {
+    const { params, body } = req;
+    const foodOrderId = params._id;
+    const item = await FoodOrderModel.find({_id: foodOrderId});
+    const updatedItem = await FoodOrderModel.findByIdAndUpdate(
+        foodOrderId,
+        { ...item, ...body },
+        { new: true }
+    );
+    res.json(updatedItem);
+});
 
-//   order.deliveryState = deliveryState;
-//   res.json(order);
-// });
+foodOrderRouter.delete('/:_id',
+    async (req: Request<{ id: string }>, res: Response) => {
+        const foodOrderId = req.params.id;
+        const deletedFoodOrder = await FoodOrderModel.findByIdAndDelete(foodOrderId);
+        res.json("Deleted: " + deletedFoodOrder);
 
-// export default router;
+    });
 
