@@ -44,7 +44,7 @@ foodCategoryRouter.put('/:_id', async (req: Request, res: Response) => {
     });
   
       //Delete-ustgah
- foodCategoryRouter.delete('/:_id', 
+ foodCategoryRouter.delete('/:id', 
     async (req: Request<{ id: string }>, res: Response) => {
     const foodCategoryId = req.params.id;
     const deletedCategory = await FoodCategoryModel.findByIdAndDelete(foodCategoryId);

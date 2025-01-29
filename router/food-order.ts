@@ -1,46 +1,82 @@
-import {Request, Response, Router} from 'express';
-import { FoodOrderModel } from '../models/food-order';
+import { Request, Response, Router } from "express";
+import { FoodOrderModel } from "../models/food-order";
 
 export const foodOrderRouter = Router();
 
-foodOrderRouter.get('/', async (req: Request, res: Response) => {
-    const foodOrder = await FoodOrderModel.find();
-    res.json(foodOrder);
+// ✅ Бүх захиалгыг авах
+foodOrderRouter.get("/", async (req: Request, res: Response) => {
+  try {
+    const foodOrders = await FoodOrderModel.find();
+    res.json(foodOrders);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
 });
 
-foodOrderRouter.get('/:id', async (req: Request, res: Response) => {
-    const id = req.params;
-    const item = await FoodOrderModel.find({_id: id});
+// ✅ Нэг захиалгыг авах
+foodOrderRouter.get("/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const item = await FoodOrderModel.findOne({ _id: id });
+
+    if (!item) {
+       res.status(404).json({ message: "Order not found" });
+    }
+
     res.json(item);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
 });
 
-foodOrderRouter.post('/', async (req: Request, res: Response) => {
-    const {body} = req;
-    await FoodOrderModel.create({
-        ...body,
-    });
-    const foodOrder = await FoodOrderModel.find();
-
-    res.json(foodOrder);
+// ✅ Захиалга нэмэх
+foodOrderRouter.post("/", async (req: Request, res: Response) => {
+  try {
+    const { body } = req;
+    await FoodOrderModel.create(body);
+    const foodOrders = await FoodOrderModel.find();
+    res.json(foodOrders);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
 });
 
-foodOrderRouter.put('/:_id', async (req: Request, res: Response) => {
-    const { params, body } = req;
-    const foodOrderId = params._id;
-    const item = await FoodOrderModel.find({_id: foodOrderId});
-    const updatedItem = await FoodOrderModel.findByIdAndUpdate(
-        foodOrderId,
-        { ...item, ...body },
-        { new: true }
+// ✅ Захиалгын төлөв шинэчлэх
+foodOrderRouter.put("/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { deliveryState } = req.body;
+
+    const updatedOrder = await FoodOrderModel.findByIdAndUpdate(
+      id,
+      { deliveryState },
+      { new: true }
     );
-    res.json(updatedItem);
+
+    if (!updatedOrder) {
+      res.status(404).json({ message: "Order not found" });
+    }
+
+    res.json(updatedOrder);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
 });
 
-foodOrderRouter.delete('/:_id',
-    async (req: Request<{ id: string }>, res: Response) => {
-        const foodOrderId = req.params.id;
-        const deletedFoodOrder = await FoodOrderModel.findByIdAndDelete(foodOrderId);
-        res.json("Deleted: " + deletedFoodOrder);
+// ✅ Захиалга устгах
+foodOrderRouter.delete("/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const deletedOrder = await FoodOrderModel.findByIdAndDelete(id);
 
-    });
+    if (!deletedOrder) {
+      res.status(404).json({ message: "Order not found" });
+    }
+
+    res.json({ message: "Deleted successfully", deletedOrder });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+});
+
 
