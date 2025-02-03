@@ -3,7 +3,6 @@ import { FoodOrderModel } from "../models/food-order";
 
 export const foodOrderRouter = Router();
 
-// ✅ Бүх захиалгыг авах
 foodOrderRouter.get("/", async (req: Request, res: Response) => {
   try {
     const foodOrders = await FoodOrderModel.find();
@@ -13,7 +12,7 @@ foodOrderRouter.get("/", async (req: Request, res: Response) => {
   }
 });
 
-// ✅ Нэг захиалгыг авах
+
 foodOrderRouter.get("/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -29,7 +28,7 @@ foodOrderRouter.get("/:id", async (req: Request, res: Response) => {
   }
 });
 
-// ✅ Захиалга нэмэх
+
 foodOrderRouter.post("/", async (req: Request, res: Response) => {
   try {
     const { body } = req;
@@ -41,7 +40,7 @@ foodOrderRouter.post("/", async (req: Request, res: Response) => {
   }
 });
 
-// ✅ Захиалгын төлөв шинэчлэх
+
 foodOrderRouter.put("/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -63,7 +62,7 @@ foodOrderRouter.put("/:id", async (req: Request, res: Response) => {
   }
 });
 
-// ✅ Захиалга устгах
+
 foodOrderRouter.delete("/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

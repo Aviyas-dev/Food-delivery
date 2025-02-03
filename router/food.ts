@@ -4,17 +4,17 @@ import cors from "cors";
 
 export const foodRouter = Router();
 
-// CORS middleware ашиглах
+
 foodRouter.use(cors());
 
-// Food-ийн үндсэн маршрут
+
 foodRouter.get("/", async (req: Request, res: Response) => {
  const filter = req.query.category ? { category: req.query.category } : {};
  const foods = await FoodModel.find(filter);
     res.json(foods);
 });
 
-// Тодорхой foodId-тай хоолны мэдээллийг авах
+
 foodRouter.get("/:foodId", async (req: Request, res: Response) => {
     const id = req.params;
     const item = await FoodModel.find({ _id: id });
@@ -22,7 +22,7 @@ foodRouter.get("/:foodId", async (req: Request, res: Response) => {
  
 });
 
-// Хоолны мэдээллийг шинэчлэх
+
 foodRouter.put("/:id", async (req: Request, res: Response) => {
     const { params, body } = req;
     const foodId = params.id;
@@ -36,7 +36,7 @@ foodRouter.put("/:id", async (req: Request, res: Response) => {
   
 });
 
-// Хоол устгах
+
 foodRouter.delete("/:id", async (req: Request<{ id: string}>, res: Response) => {
     const foodId = req.params.id;
     const deletedFood = await FoodModel.findByIdAndDelete(foodId);
@@ -44,7 +44,7 @@ foodRouter.delete("/:id", async (req: Request<{ id: string}>, res: Response) => 
  
 });
 
-// Хоол нэмэх
+
 foodRouter.post("/", async (req: Request, res: Response) => {
   const { body } = req;
     await FoodModel.create({

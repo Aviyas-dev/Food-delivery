@@ -18,7 +18,7 @@ foodCategoryRouter.get('/:id', async (req: Request, res: Response)=> {
     
 });
 
-//create new food category-shiniig uusgeh
+
 foodCategoryRouter.post('/', async (req: Request, res: Response) => {
     const {body} = req;
     await FoodCategoryModel.create({
@@ -30,7 +30,7 @@ foodCategoryRouter.post('/', async (req: Request, res: Response) => {
 
 
 
-//update hiih heseg
+
 foodCategoryRouter.put('/:_id', async (req: Request, res: Response) => {
     const { params, body } = req;
     const foodCategoryId = params._id;
@@ -43,7 +43,7 @@ foodCategoryRouter.put('/:_id', async (req: Request, res: Response) => {
      res.json(updatedItem);
     });
   
-      //Delete-ustgah
+      
  foodCategoryRouter.delete('/:id', 
     async (req: Request<{ id: string }>, res: Response) => {
     const foodCategoryId = req.params.id;
